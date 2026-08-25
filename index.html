@@ -270,17 +270,48 @@ let S = {
   theme:"dark",
 };
 
+function cleanSpokenText(text){
+  // Make text TTS-friendly: hyphens read as words break into letters on some
+  // engines ("Push-Ups" -> "Push, U, P, S"), so normalize punctuation first.
+  return String(text)
+    .replace(/(\w)-(\w)/g, "$1 $2")      // "Push-Ups" -> "Push Ups"
+    .replace(/(\w)'s\b/gi, "$1s")         // "Push-Up's" -> "Push Ups" (avoid apostrophe spelling)
+    .replace(/[_/]/g, " ")
+    .replace(/\s+/g, " ")
+    .replace(/\s+([,.!?])/g, "$1")        // no space before punctuation
+    .trim()
+    .replace(/([^.!?])$/, "$1.");         // ensure a trailing pause
+}
+function pickVoice(voices, gender){
+  // Prefer higher-quality network/Google/Natural voices when available,
+  // then fall back to common OS voice names, then any English voice.
+  const female = /female|zira|samantha|victoria|karen|susan|moira|tessa|fiona|google us english$|natural.*female/i;
+  const male = /male|david|daniel|fred|alex|george|mark|natural.*male/i;
+  const pattern = gender === "female" ? female : male;
+  const scored = voices
+    .filter(v => v.lang && v.lang.toLowerCase().startsWith("en"))
+    .map(v => {
+      let score = 0;
+      if(pattern.test(v.name)) score += 3;
+      if(/google/i.test(v.name)) score += 2;
+      if(/natural|neural|online/i.test(v.name)) score += 2;
+      if(v.localService === false) score += 1; // often higher quality network voices
+      return {v, score};
+    })
+    .sort((a,b)=>b.score-a.score);
+  return scored.length ? scored[0].v : (voices.find(x=>x.lang && x.lang.startsWith("en")) || voices[0] || null);
+}
 function speak(text){
   if(!S.profile.voiceOn || S.profile.voice==="off") return;
   try{
     window.speechSynthesis.cancel();
-    const u = new SpeechSynthesisUtterance(text);
-    u.volume = S.profile.volume; u.rate = 1; u.pitch = S.profile.voice==="female" ? 1.15 : 0.95;
+    const clean = cleanSpokenText(text);
+    const u = new SpeechSynthesisUtterance(clean);
+    u.volume = S.profile.volume;
+    u.rate = 0.93;   // slightly slower than default for clearer word separation
+    u.pitch = S.profile.voice==="female" ? 1.1 : 0.92;
     const voices = window.speechSynthesis.getVoices();
-    let v = null;
-    if(S.profile.voice==="female") v = voices.find(x=>/female|zira|samantha|victoria|karen/i.test(x.name));
-    if(S.profile.voice==="male") v = voices.find(x=>/male|david|daniel|fred|alex/i.test(x.name));
-    if(!v) v = voices.find(x=>x.lang && x.lang.startsWith("en"));
+    const v = pickVoice(voices, S.profile.voice);
     if(v) u.voice = v;
     window.speechSynthesis.speak(u);
   }catch(e){}
