@@ -5,7 +5,7 @@ HomeBulk is a mobile-first, single-file web app for building muscle and strength
 
 ## Getting started
 
-1. Open `homebulk.html` in any modern browser (Chrome, Safari, Edge, Firefox).
+1. Open `index.html` in any modern browser (Chrome, Safari, Edge, Firefox).
 2. No install, server, or account needed — it's a single self-contained file.
 3. Progress is kept in memory for the current browser session only. Refreshing or closing the page resets your streak, completed workouts, and challenge status, since the app doesn't use any persistent storage.
 
