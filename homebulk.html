@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>HomeBulk — Build. Train. Progress.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0b1220;
+  --bg2:#0f1a2e;
+  --card:#121e33;
+  --card-hi:#17263f;
+  --brick:#1c2c47;
+  --accent:#2f7dfb;
+  --accent-deep:#1a5ce0;
+  --accent-soft:#2f7dfb22;
+  --ember:#ff7a45;
+  --good:#33d182;
+  --text:#eef3fb;
+  --text-dim:#8ea0bd;
+  --border:#1e2c47;
+  --radius:20px;
+}
+*{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+html,body{margin:0;padding:0;height:100%;background:var(--bg);}
+body{
+  font-family:'Inter',sans-serif; color:var(--text);
+  display:flex; justify-content:center;
+}
+#app{
+  width:100%; max-width:480px; min-height:100vh; background:var(--bg);
+  position:relative; overflow-x:hidden; display:flex; flex-direction:column;
+  background-image:
+    radial-gradient(circle at 15% 0%, #1a2c50 0%, transparent 45%),
+    radial-gradient(circle at 100% 15%, #14213d 0%, transparent 40%);
+}
+.disp{font-family:'Archivo Black',sans-serif; letter-spacing:.5px;}
+.mono{font-family:'JetBrains Mono',monospace;}
+.screen{flex:1; display:flex; flex-direction:column; padding:24px 20px 100px; animation:fadein .35s ease;}
+@keyframes fadein{from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);}}
+h1,h2,h3,p{margin:0;}
+.eyebrow{font-size:11px; letter-spacing:2.5px; color:var(--accent); font-weight:700; text-transform:uppercase;}
+.btn{
+  border:none; border-radius:16px; padding:16px 20px; font-family:'Inter'; font-weight:700;
+  font-size:15px; cursor:pointer; text-align:center; transition:transform .12s ease, opacity .12s ease;
+}
+.btn:active{transform:scale(.97);}
+.btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent-deep)); color:#fff; box-shadow:0 10px 24px -8px #1a5ce088;}
+.btn-ghost{background:var(--card); color:var(--text); border:1px solid var(--border);}
+.btn-ember{background:linear-gradient(135deg,var(--ember),#e8562a); color:#fff;}
+.btn-block{width:100%;}
+.btn-sm{padding:10px 14px; font-size:13px; border-radius:12px;}
+.card{background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:18px;}
+.row{display:flex; align-items:center; justify-content:space-between; gap:10px;}
+.stack{display:flex; flex-direction:column; gap:12px;}
+.pill{display:inline-flex; align-items:center; gap:6px; padding:6px 12px; border-radius:100px; background:var(--accent-soft); color:var(--accent); font-size:12px; font-weight:700;}
+.tag{font-size:11px; padding:4px 10px; border-radius:100px; background:var(--card-hi); color:var(--text-dim); font-weight:600;}
+input[type=text],input[type=number],select{
+  width:100%; background:var(--bg2); border:1px solid var(--border); color:var(--text);
+  padding:14px; border-radius:12px; font-family:'Inter'; font-size:15px;
+}
+.choice{border:1px solid var(--border); background:var(--bg2); border-radius:14px; padding:14px; display:flex; align-items:center; gap:12px; cursor:pointer;}
+.choice.sel{border-color:var(--accent); background:var(--accent-soft);}
+.choice-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+::-webkit-scrollbar{display:none;}
+
+/* Splash */
+.splash{flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:18px; position:relative;}
+.logo-mark{width:96px; height:96px; position:relative;}
+.logo-mark svg{width:100%; height:100%; filter:drop-shadow(0 12px 24px #1a5ce066);}
+.splash h1{font-size:40px; letter-spacing:1px;}
+.splash .tagline{font-size:12px; letter-spacing:4px; color:var(--text-dim); font-weight:700;}
+.loadbar{width:160px; height:4px; border-radius:4px; background:var(--border); overflow:hidden; margin-top:10px;}
+.loadbar-fill{height:100%; width:0%; background:linear-gradient(90deg,var(--accent),var(--ember)); animation:load 1.6s ease forwards;}
+@keyframes load{to{width:100%;}}
+
+/* Top bar */
+.topbar{display:flex; align-items:center; justify-content:space-between; padding:20px 20px 6px;}
+.iconbtn{width:38px; height:38px; border-radius:12px; background:var(--card); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; cursor:pointer; color:var(--text);}
+
+/* Bottom nav */
+.navbar{position:fixed; bottom:0; left:50%; transform:translateX(-50%); width:100%; max-width:480px; background:#0d1526f0; backdrop-filter:blur(10px); border-top:1px solid var(--border); display:flex; padding:10px 6px calc(10px + env(safe-area-inset-bottom)); z-index:50;}
+.navitem{flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; font-size:10px; font-weight:700; color:var(--text-dim); cursor:pointer; letter-spacing:.5px;}
+.navitem.active{color:var(--accent);}
+.navitem svg{width:20px; height:20px;}
+
+/* Progress wall (signature element) */
+.wall{display:grid; grid-template-columns:repeat(14,1fr); gap:3px;}
+.brick{aspect-ratio:2/1; border-radius:2px; background:var(--brick);}
+.brick.filled{background:linear-gradient(135deg,var(--accent),var(--ember));}
+
+/* Rings */
+.ring-wrap{position:relative; width:78px; height:78px;}
+.ring-wrap svg{transform:rotate(-90deg);}
+.ring-num{position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:16px;}
+
+/* Exercise card */
+.exrow{display:flex; align-items:center; gap:12px; padding:12px; border-radius:14px; background:var(--bg2); border:1px solid var(--border);}
+.exrow .exicon{width:42px; height:42px; border-radius:12px; background:var(--accent-soft); display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0;}
+
+/* Timer */
+.timer-big{font-family:'JetBrains Mono'; font-size:64px; font-weight:700; text-align:center; letter-spacing:1px;}
+.progress-track{width:100%; height:8px; background:var(--border); border-radius:8px; overflow:hidden;}
+.progress-fill{height:100%; background:linear-gradient(90deg,var(--accent),var(--ember)); border-radius:8px; transition:width .3s ease;}
+
+.list-clean{list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:8px;}
+.list-clean li{display:flex; gap:8px; font-size:13.5px; color:var(--text-dim); line-height:1.5;}
+.list-clean li::before{content:'—'; color:var(--accent); flex-shrink:0;}
+
+.chip-row{display:flex; gap:8px; flex-wrap:wrap;}
+.week-tab{padding:8px 14px; border-radius:100px; font-size:12px; font-weight:700; background:var(--bg2); color:var(--text-dim); border:1px solid var(--border); cursor:pointer; white-space:nowrap;}
+.week-tab.active{background:var(--accent); color:#fff; border-color:var(--accent);}
+.daychip{aspect-ratio:1; border-radius:12px; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:13px; background:var(--bg2); border:1px solid var(--border); cursor:pointer; color:var(--text-dim);}
+.daychip.done{background:var(--good); color:#04160c; border-color:var(--good);}
+.daychip.today{border-color:var(--accent); color:var(--accent);}
+.daychip.rest{background:var(--card-hi); color:var(--text-dim);}
+.dayg{display:grid; grid-template-columns:repeat(7,1fr); gap:8px;}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+/* ========================= DATA ========================= */
+const EX = {
+  pushup:{name:"Push-ups", target:"Chest, shoulders, triceps, core", type:"reps", muscles:"chest",
+    how:["Place hands slightly wider than shoulder-width.","Keep your body in a straight line from head to heels.","Lower your body with control until elbows hit ~90°.","Push back up to full extension.","Repeat while keeping your core braced."],
+    mistakes:["Sagging hips","Raising the hips too high","Moving too quickly","Poor hand position"],
+    easier:"inclinePushup", harder:"declinePushup"},
+  inclinePushup:{name:"Incline Push-ups", target:"Lower chest, shoulders, triceps", type:"reps", muscles:"chest",
+    how:["Place hands on a stable elevated surface (chair, step).","Keep your body straight from head to heels.","Lower your chest toward the surface.","Press back up with control."],
+    mistakes:["Surface not stable","Flaring elbows too wide","Rushing the rep"], easier:null, harder:"pushup"},
+  narrowPushup:{name:"Narrow Push-ups", target:"Triceps, inner chest", type:"reps", muscles:"chest",
+    how:["Place hands close together under your chest.","Keep elbows tucked near your body as you lower.","Push back up fully.","Keep hips level throughout."],
+    mistakes:["Elbows flaring out","Hips sagging"], easier:"inclinePushup", harder:"declinePushup"},
+  declinePushup:{name:"Decline Push-ups", target:"Upper chest, shoulders", type:"reps", muscles:"chest",
+    how:["Place feet on an elevated stable surface.","Hands slightly wider than shoulders on the floor.","Lower your chest toward the floor with control.","Press back up fully."],
+    mistakes:["Surface too high for your level","Sagging lower back"], easier:"pushup", harder:null},
+  pikePushup:{name:"Pike Push-ups", target:"Shoulders, upper chest", type:"reps", muscles:"chest",
+    how:["Start in a downward-V position, hips high.","Lower your head toward the floor by bending elbows.","Press back up to the starting pike position.","Keep legs fairly straight."],
+    mistakes:["Hips dropping mid-set","Very short range of motion"], easier:"inclinePushup", harder:null},
+  tapPushup:{name:"Tap Push-ups", target:"Chest, shoulders, core stability", type:"reps", muscles:"chest",
+    how:["Start in a standard push-up position.","Lower down, then as you press up, tap one shoulder with the opposite hand.","Alternate sides each rep.","Keep hips square and stable."],
+    mistakes:["Hips rotating with the tap","Losing plank alignment"], easier:"pushup", harder:null},
+  plank:{name:"Plank", target:"Core, shoulders, glutes", type:"time", muscles:"core",
+    how:["Rest on forearms and toes.","Keep a straight line from head to heels.","Brace your core and squeeze glutes.","Breathe steadily and hold."],
+    mistakes:["Hips sagging","Hips piked too high","Holding your breath"], easier:"elbowPlank", harder:"bodySaw"},
+  crunches:{name:"Crunches", target:"Upper abs", type:"reps", muscles:"core",
+    how:["Lie on your back, knees bent, feet flat.","Hands lightly behind your head.","Lift shoulder blades off the floor using your abs.","Lower with control and repeat."],
+    mistakes:["Pulling on the neck","Using momentum"], easier:"kneeCrunches", harder:"bicycleCrunches"},
+  situps:{name:"Sit-ups", target:"Full abdominal wall", type:"reps", muscles:"core",
+    how:["Lie back, knees bent, feet anchored or flat.","Curl your torso all the way up toward your knees.","Lower back down with control.","Keep the movement smooth, not jerky."],
+    mistakes:["Yanking with the neck","Using arm swing for momentum"], easier:"crunches", harder:"flutterKicks"},
+  flutterKicks:{name:"Flutter Kicks", target:"Lower abs, hip flexors", type:"reps", muscles:"core",
+    how:["Lie on your back, hands under your glutes.","Lift legs a few inches off the floor.","Alternate small up-and-down kicks.","Keep your lower back pressed toward the floor."],
+    mistakes:["Lower back arching off the floor","Kicking too high"], easier:"legRaises", harder:"bodySaw"},
+  legRaises:{name:"Leg Raises", target:"Lower abs", type:"reps", muscles:"core",
+    how:["Lie flat, legs straight, hands at your sides.","Raise legs until hips start to curl slightly.","Lower slowly without touching the floor.","Keep your core braced throughout."],
+    mistakes:["Using momentum to swing legs up","Arching the lower back"], easier:"kneeCrunches", harder:"flutterKicks"},
+  bicycleCrunches:{name:"Bicycle Crunches", target:"Obliques, upper & lower abs", type:"reps", muscles:"core",
+    how:["Lie back, hands lightly behind your head.","Bring one elbow toward the opposite knee.","Extend the other leg out straight.","Alternate sides in a pedaling motion."],
+    mistakes:["Pulling on the neck","Moving too fast with poor rotation"], easier:"crunches", harder:null},
+  kneeCrunches:{name:"Knee Crunches", target:"Upper abs, hip flexors", type:"reps", muscles:"core",
+    how:["Sit back slightly, hands behind you or at your sides.","Bring knees toward your chest.","Extend legs back out with control.","Keep your core engaged throughout."],
+    mistakes:["Rushing the tempo","Not fully engaging the core"], easier:null, harder:"crunches"},
+  legPullins:{name:"Leg Pull-ins", target:"Lower abs, hip flexors", type:"reps", muscles:"core",
+    how:["Sit with hands behind you for support, legs extended.","Pull your knees in toward your chest.","Extend legs back out without touching the floor.","Keep your torso stable."],
+    mistakes:["Letting feet touch down between reps","Rounding the shoulders"], easier:"kneeCrunches", harder:null},
+  plankArmReaches:{name:"Plank Arm Reaches", target:"Core, shoulder stability", type:"reps", muscles:"core",
+    how:["Start in a forearm or high plank.","Reach one arm straight forward.","Hold briefly, keeping hips square.","Return and alternate sides."],
+    mistakes:["Hips rotating toward the reaching side","Sagging lower back"], easier:"elbowPlank", harder:"bodySaw"},
+  elbowPlank:{name:"Elbow Plank", target:"Core, shoulders", type:"time", muscles:"core",
+    how:["Rest on forearms, elbows under shoulders.","Keep body in a straight line.","Engage your core and hold steady.","Breathe normally throughout."],
+    mistakes:["Sagging hips","Elbows drifting too far forward"], easier:null, harder:"plank"},
+  bodySaw:{name:"Body Saw", target:"Deep core, shoulders", type:"reps", muscles:"core",
+    how:["Start in a forearm plank on a smooth surface.","Rock your body forward, then pull back using your core.","Keep hips level throughout the movement.","Move slowly and with control."],
+    mistakes:["Hips dropping during the rock","Moving too fast"], easier:"plank", harder:null},
+  squats:{name:"Squats", target:"Quads, glutes, hamstrings", type:"reps", muscles:"legs",
+    how:["Stand with feet shoulder-width apart.","Push your hips back and bend your knees.","Lower until thighs are roughly parallel to the floor.","Drive through your heels to stand back up."],
+    mistakes:["Knees caving inward","Heels lifting off the floor"], easier:null, harder:"splitSquats"},
+  lunges:{name:"Lunges", target:"Quads, glutes, hamstrings, balance", type:"reps", muscles:"legs",
+    how:["Step forward with one leg.","Lower until both knees are near 90°.","Push back through your front heel to standing.","Alternate legs each rep."],
+    mistakes:["Front knee traveling past the toes","Losing balance"], easier:null, harder:"splitSquats"},
+  gluteBridges:{name:"Glute Bridges", target:"Glutes, hamstrings, lower back", type:"reps", muscles:"legs",
+    how:["Lie on your back, knees bent, feet flat.","Drive through your heels to lift your hips.","Squeeze your glutes at the top.","Lower with control and repeat."],
+    mistakes:["Overarching the lower back","Not fully squeezing glutes"], easier:null, harder:"splitSquats"},
+  wallSit:{name:"Wall Sit", target:"Quads, glutes, core", type:"time", muscles:"legs",
+    how:["Lean your back against a wall.","Slide down until knees are near 90°.","Keep feet flat and knees over ankles.","Hold the position and breathe steadily."],
+    mistakes:["Knees drifting past toes","Sliding too low or too high"], easier:null, harder:null},
+  calfRaises:{name:"Calf Raises", target:"Calves", type:"reps", muscles:"legs",
+    how:["Stand with feet hip-width apart.","Rise up onto the balls of your feet.","Pause briefly at the top.","Lower with control and repeat."],
+    mistakes:["Bouncing through reps","Not reaching full range"], easier:null, harder:null},
+  splitSquats:{name:"Split Squats", target:"Quads, glutes, balance", type:"reps", muscles:"legs",
+    how:["Step one foot back into a staggered stance.","Lower your back knee toward the floor.","Push through your front heel to rise.","Complete all reps, then switch legs."],
+    mistakes:["Front knee caving in","Torso leaning too far forward"], easier:"lunges", harder:null},
+  jumpingJacks:{name:"Jumping Jacks", target:"Full body, cardio", type:"reps", muscles:"full",
+    how:["Start standing, feet together, arms at sides.","Jump feet apart while raising arms overhead.","Jump back to the starting position.","Keep a steady, light rhythm."],
+    mistakes:["Landing flat-footed","Losing rhythm"], easier:null, harder:null},
+  buttKicks:{name:"Butt Kicks", target:"Hamstrings, cardio", type:"reps", muscles:"full",
+    how:["Jog in place lightly.","Kick your heels back toward your glutes.","Keep your core engaged and torso tall.","Maintain a quick, light cadence."],
+    mistakes:["Leaning too far forward","Kicking too hard on hard floors"], easier:null, harder:null},
+};
+
+const PROGRAMS = {
+  chest:{name:"Chest Builder", icon:"💪", goal:"Improve pushing strength and chest development.",
+    levels:{ beginner:[["inclinePushup",3,10],["pushup",3,6],["plank",3,20]],
+      intermediate:[["pushup",3,12],["inclinePushup",3,10],["narrowPushup",3,8],["plank",3,35]],
+      advanced:[["pushup",4,15],["declinePushup",3,10],["pikePushup",3,10],["tapPushup",3,10]] }},
+  core:{name:"Abs & Core", icon:"🔥", goal:"Improve core strength and stability.",
+    levels:{ beginner:[["kneeCrunches",3,10],["legRaises",3,8],["elbowPlank",3,20]],
+      intermediate:[["situps",4,10],["flutterKicks",4,12],["legPullins",3,8],["plank",3,30]],
+      advanced:[["bicycleCrunches",4,10],["bodySaw",4,10],["plankArmReaches",4,10],["elbowPlank",3,30]] }},
+  legs:{name:"Lower Body", icon:"🦵", goal:"Improve lower-body strength.",
+    levels:{ beginner:[["squats",3,10],["gluteBridges",3,10],["calfRaises",3,12]],
+      intermediate:[["squats",4,15],["lunges",3,10],["wallSit",3,30],["calfRaises",3,15]],
+      advanced:[["splitSquats",4,10],["lunges",4,12],["wallSit",3,45],["gluteBridges",4,15]] }},
+  full:{name:"Full Body", icon:"⚡", goal:"Build general strength and conditioning.",
+    levels:{ beginner:[["squats",3,10],["pushup",3,8],["lunges",3,8],["plank",3,20],["crunches",3,10]],
+      intermediate:[["squats",3,15],["pushup",3,12],["lunges",3,12],["plank",3,35],["situps",3,12]],
+      advanced:[["squats",4,18],["declinePushup",4,12],["splitSquats",4,12],["bodySaw",3,12],["wallSit",3,45]] }},
+};
+
+const GOALS = [
+  {id:"chest", label:"Chest", desc:"Improve pushing strength and chest development.", icon:"💪"},
+  {id:"arms", label:"Arms", desc:"Improve arm and upper-body strength.", icon:"🦾"},
+  {id:"shoulders", label:"Shoulders", desc:"Develop shoulder strength.", icon:"🏋️"},
+  {id:"core", label:"Core", desc:"Improve core strength and stability.", icon:"🔥"},
+  {id:"legs", label:"Legs", desc:"Improve lower-body strength.", icon:"🦵"},
+  {id:"full", label:"Full Body", desc:"Build general strength and conditioning.", icon:"⚡"},
+  {id:"pushup", label:"Push-Up Progress", desc:"Improve push-up ability and technique.", icon:"📈"},
+  {id:"challenge28", label:"28-Day Challenge", desc:"Complete a structured 28-day consistency challenge.", icon:"🗓️"},
+];
+
+const WEEK_LABEL = ["FOUNDATION","BUILD","PROGRESS","CHALLENGE"];
+const DAY_TEMPLATES = [
+  {tag:"FULL BODY", items:[["squats",3,10],["pushup",3,8],["lunges",3,10],["plank",3,20],["crunches",3,12]]},
+  {tag:"CHEST + CORE", items:[["pushup",3,10],["inclinePushup",3,10],["plank",3,25],["situps",3,10]]},
+  {tag:"LEGS + CARDIO", items:[["squats",3,12],["jumpingJacks",3,20],["lunges",3,10],["calfRaises",3,12]]},
+  {tag:"ABS + MOBILITY", items:[["crunches",3,12],["flutterKicks",3,12],["buttKicks",3,20],["elbowPlank",3,25]]},
+];
+function scaleFor(week){ return [1,1.15,1.3,1.5][week-1]; }
+function genDay(dayNum){
+  const week = Math.ceil(dayNum/7);
+  const dow = ((dayNum-1)%7)+1;
+  if(dow===7) return {rest:true, week, tag:"REST DAY"};
+  const tpl = DAY_TEMPLATES[(dayNum-1)%DAY_TEMPLATES.length];
+  const f = scaleFor(week);
+  const items = tpl.items.map(([id,sets,val])=>{
+    const ex = EX[id];
+    const scaled = Math.max(ex.type==="time"?10:5, Math.round(val*f / (ex.type==="time"?5:1)) * (ex.type==="time"?5:1));
+    return [id, sets, scaled];
+  });
+  return {rest:false, week, tag:tpl.tag, items};
+}
+
+/* ========================= STATE ========================= */
+let S = {
+  screen:"splash",
+  setupStep:0,
+  profile:{name:"", age:"", experience:"Beginner", duration:"25", days:"4", equipment:[], voice:"off", voiceOn:true, volume:0.9, motivation:true},
+  primaryGoal:null, secondaryGoals:[],
+  streak:0, completedWorkouts:0, weekCompletedDays:[], challengeDone:Array(28).fill(false),
+  pr:{pushups:0, squats:0, plankSec:0},
+  activeWeekTab:1,
+  library:{query:"", filter:"all"},
+  detailExId:null, detailProgram:null, detailLevel:"beginner", detailDay:null,
+  workoutSource:null, workout:null, exIdx:0, setIdx:0, exList:[],
+  live:{phase:"idle", secondsLeft:0, reps:0, timerId:null, resting:false},
+  theme:"dark",
+};
+
+function speak(text){
+  if(!S.profile.voiceOn || S.profile.voice==="off") return;
+  try{
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.volume = S.profile.volume; u.rate = 1; u.pitch = S.profile.voice==="female" ? 1.15 : 0.95;
+    const voices = window.speechSynthesis.getVoices();
+    let v = null;
+    if(S.profile.voice==="female") v = voices.find(x=>/female|zira|samantha|victoria|karen/i.test(x.name));
+    if(S.profile.voice==="male") v = voices.find(x=>/male|david|daniel|fred|alex/i.test(x.name));
+    if(!v) v = voices.find(x=>x.lang && x.lang.startsWith("en"));
+    if(v) u.voice = v;
+    window.speechSynthesis.speak(u);
+  }catch(e){}
+}
+
+/* ========================= HELPERS ========================= */
+function setS(patch){ Object.assign(S,patch); render(); }
+function go(screen, patch={}){ Object.assign(S,{screen},patch); window.scrollTo(0,0); render(); }
+function icon(name){
+  const M = {
+    home:'<path d="M4 11L12 4l8 7v8a1 1 0 0 1-1 1h-5v-6H10v6H5a1 1 0 0 1-1-1z"/>',
+    dumbbell:'<path d="M3 9h2v6H3zM19 9h2v6h-2zM6 7h2v10H6zM16 7h2v10h-2zM9 11h6v2H9z"/>',
+    calendar:'<path d="M4 5h16v16H4zM4 9h16M8 3v4M16 3v4"/>',
+    list:'<path d="M4 6h16M4 12h16M4 18h16"/>',
+    chart:'<path d="M4 20V10M11 20V4M18 20v-7"/>',
+    gear:'<circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 0 0-.1-1.2l2-1.5-2-3.4-2.3.9a7 7 0 0 0-2.1-1.2L14 3h-4l-.5 2.6a7 7 0 0 0-2.1 1.2l-2.3-.9-2 3.4 2 1.5A7 7 0 0 0 5 12c0 .4 0 .8.1 1.2l-2 1.5 2 3.4 2.3-.9c.6.5 1.3.9 2.1 1.2L10 21h4l.5-2.6c.8-.3 1.5-.7 2.1-1.2l2.3.9 2-3.4-2-1.5c.1-.4.1-.8.1-1.2z"/>',
+  };
+  return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${M[name]||""}</svg>`;
+}
+function ring(pct,label){
+  const r=32, c=2*Math.PI*r, off=c-(pct/100)*c;
+  return `<div class="ring-wrap"><svg width="78" height="78"><circle cx="39" cy="39" r="${r}" stroke="#1e2c47" stroke-width="7" fill="none"/>
+  <circle cx="39" cy="39" r="${r}" stroke="url(#g1)" stroke-width="7" fill="none" stroke-linecap="round" stroke-dasharray="${c}" stroke-dashoffset="${off}"/>
+  <defs><linearGradient id="g1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#2f7dfb"/><stop offset="100%" stop-color="#ff7a45"/></linearGradient></defs></svg>
+  <div class="ring-num">${label}</div></div>`;
+}
+function wall(total,filled){
+  let h="";
+  for(let i=0;i<total;i++) h+=`<div class="brick ${i<filled?'filled':''}"></div>`;
+  return `<div class="wall">${h}</div>`;
+}
+function fmtTime(s){ const m=Math.floor(s/60), sec=s%60; return `${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`; }
+
+/* ========================= SCREENS ========================= */
+function screenSplash(){
+  setTimeout(()=>{ if(S.screen==="splash") go(S.profile.name ? "dashboard" : "setup"); }, 1700);
+  return `
+  <div class="splash">
+    <div class="logo-mark">${logoSVG()}</div>
+    <h1 class="disp">HomeBulk</h1>
+    <div class="tagline">BUILD • TRAIN • PROGRESS</div>
+    <div class="loadbar"><div class="loadbar-fill"></div></div>
+  </div>`;
+}
+function logoSVG(){
+  return `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#2f7dfb"/><stop offset="100%" stop-color="#ff7a45"/></linearGradient></defs>
+    <path d="M50 6 L92 40 L82 40 L82 90 L60 90 L60 62 L40 62 L40 90 L18 90 L18 40 L8 40 Z" fill="url(#lg)"/>
+    <rect x="40" y="46" width="20" height="8" rx="3" fill="#0b1220"/>
+    <circle cx="35" cy="50" r="6" fill="#0b1220"/>
+    <circle cx="65" cy="50" r="6" fill="#0b1220"/>
+  </svg>`;
+}
+
+function screenSetup(){
+  const steps = ["Name","Age & Level","Duration & Days","Equipment","Voice Guide"];
+  const p = S.profile, i = S.setupStep;
+  let body = "";
+  if(i===0){
+    body = `
+    <p class="eyebrow">Step 1 of 5</p>
+    <h2 class="disp" style="font-size:26px;margin-top:8px;">What should we call you?</h2>
+    <p style="color:var(--text-dim);font-size:13.5px;margin-top:8px;">Your name or nickname — used to personalize your plan.</p>
+    <input type="text" id="nameInput" placeholder="e.g. Levi" value="${p.name}" oninput="liveNameUpdate(this.value)" style="margin-top:18px;">`;
+  } else if(i===1){
+    body = `
+    <p class="eyebrow">Step 2 of 5</p>
+    <h2 class="disp" style="font-size:26px;margin-top:8px;">Age & experience</h2>
+    <input type="number" id="ageInput" placeholder="Age" value="${p.age}" oninput="S.profile.age=this.value" style="margin-top:16px;">
+    <p style="color:var(--text-dim);font-size:12.5px;margin:18px 0 8px;font-weight:700;">EXPERIENCE LEVEL</p>
+    <div class="stack">
+      ${["Beginner","Intermediate","Advanced"].map(x=>`
+      <div class="choice ${p.experience===x?'sel':''}" onclick="S.profile.experience='${x}';render()">
+        <div>${x==='Beginner'?'🌱':x==='Intermediate'?'🔥':'🏆'}</div>
+        <div><b>${x}</b></div>
+      </div>`).join("")}
+    </div>`;
+  } else if(i===2){
+    body = `
+    <p class="eyebrow">Step 3 of 5</p>
+    <h2 class="disp" style="font-size:26px;margin-top:8px;">Workout schedule</h2>
+    <p style="color:var(--text-dim);font-size:12.5px;margin:18px 0 8px;font-weight:700;">PREFERRED DURATION</p>
+    <div class="choice-grid">
+      ${["15","25","35","45"].map(x=>`<div class="choice ${p.duration===x?'sel':''}" onclick="S.profile.duration='${x}';render()" style="justify-content:center;">${x} min</div>`).join("")}
+    </div>
+    <p style="color:var(--text-dim);font-size:12.5px;margin:18px 0 8px;font-weight:700;">DAYS PER WEEK</p>
+    <div class="choice-grid">
+      ${["3","4","5","6"].map(x=>`<div class="choice ${p.days===x?'sel':''}" onclick="S.profile.days='${x}';render()" style="justify-content:center;">${x} days</div>`).join("")}
+    </div>`;
+  } else if(i===3){
+    const opts = ["No equipment","Chair","Backpack","Resistance band","Other household item"];
+    body = `
+    <p class="eyebrow">Step 4 of 5</p>
+    <h2 class="disp" style="font-size:26px;margin-top:8px;">Available equipment</h2>
+    <p style="color:var(--text-dim);font-size:13.5px;margin-top:8px;">Select all that apply.</p>
+    <div class="stack" style="margin-top:16px;">
+    ${opts.map(o=>`<div class="choice ${p.equipment.includes(o)?'sel':''}" onclick="toggleEquip('${o}')"><div>${p.equipment.includes(o)?'✅':'⬜'}</div><div>${o}</div></div>`).join("")}
+    </div>`;
+  } else if(i===4){
+    body = `
+    <p class="eyebrow">Step 5 of 5</p>
+    <h2 class="disp" style="font-size:26px;margin-top:8px;">Choose your voice guide</h2>
+    <div class="stack" style="margin-top:16px;">
+      ${[["male","Male Voice","🔊"],["female","Female Voice","🔊"],["off","Voice Off","🔇"]].map(([id,label,em])=>`
+      <div class="choice ${p.voice===id?'sel':''}" onclick="S.profile.voice='${id}';render()"><div>${em}</div><div><b>${label}</b></div></div>`).join("")}
+    </div>
+    <button class="btn btn-ghost btn-block" style="margin-top:16px;" onclick="testVoice()">🎧 Test Voice</button>
+    `;
+  }
+  const canNext = i===0 ? p.name.trim().length>0 : true;
+  return `
+  <div class="screen">
+    <div class="row" style="margin-bottom:10px;">
+      ${i>0 ? `<div class="iconbtn" onclick="S.setupStep--;render()">←</div>` : `<div></div>`}
+      <div style="display:flex;gap:5px;">${steps.map((_,idx)=>`<div style="width:${idx===i?18:6}px;height:6px;border-radius:4px;background:${idx<=i?'var(--accent)':'var(--border)'};transition:.2s;"></div>`).join("")}</div>
+      <div style="width:38px;"></div>
+    </div>
+    ${body}
+    <div style="flex:1;"></div>
+    <button class="btn btn-primary btn-block" id="setupNextBtn" style="margin-top:20px;" ${canNext?'':'disabled'} onclick="setupNext()">${i===4?'CREATE MY PLAN':'CONTINUE'}</button>
+  </div>`;
+}
+function liveNameUpdate(v){
+  S.profile.name = v;
+  const btn = document.getElementById("setupNextBtn");
+  if(btn) btn.disabled = v.trim().length===0;
+}
+function toggleEquip(o){
+  const e = S.profile.equipment;
+  if(o==="No equipment"){ S.profile.equipment = e.includes(o) ? [] : ["No equipment"]; }
+  else{
+    S.profile.equipment = e.filter(x=>x!=="No equipment");
+    if(S.profile.equipment.includes(o)) S.profile.equipment = S.profile.equipment.filter(x=>x!==o);
+    else S.profile.equipment.push(o);
+  }
+  render();
+}
+function testVoice(){ speak("Get ready for push-ups. Three... two... one... start."); }
+function setupNext(){
+  const nameEl = document.getElementById("nameInput"); if(nameEl) S.profile.name = nameEl.value;
+  const ageEl = document.getElementById("ageInput"); if(ageEl) S.profile.age = ageEl.value;
+  if(S.setupStep<4){ S.setupStep++; render(); }
+  else { go("goals", {setupStep:0}); }
+}
+
+function screenGoals(fromSettings){
+  return `
+  <div class="topbar"><h2 class="disp" style="font-size:20px;">Your goal</h2><div class="iconbtn" onclick="go('${fromSettings?'settings':'dashboard'}')">✕</div></div>
+  <div class="screen" style="padding-top:6px;">
+    <p style="color:var(--text-dim);font-size:13.5px;">What do you want to improve? Choose one primary goal — add secondary goals if you like.</p>
+    <div class="stack" style="margin-top:16px;">
+    ${GOALS.map(g=>`
+      <div class="choice" style="align-items:flex-start;${S.primaryGoal===g.id?'border-color:var(--accent);background:var(--accent-soft);':''}">
+        <div style="font-size:22px;">${g.icon}</div>
+        <div style="flex:1;">
+          <b>${g.label}</b>
+          <div style="color:var(--text-dim);font-size:12.5px;margin-top:2px;">${g.desc}</div>
+          <div style="display:flex;gap:8px;margin-top:10px;">
+            <button class="btn btn-sm ${S.primaryGoal===g.id?'btn-primary':'btn-ghost'}" onclick="setPrimary('${g.id}')">${S.primaryGoal===g.id?'Primary ✓':'Set primary'}</button>
+            <button class="btn btn-sm ${S.secondaryGoals.includes(g.id)?'btn-primary':'btn-ghost'}" onclick="toggleSecondary('${g.id}')">${S.secondaryGoals.includes(g.id)?'Added ✓':'Add secondary'}</button>
+          </div>
+        </div>
+      </div>`).join("")}
+    </div>
+    <button class="btn btn-primary btn-block" style="margin-top:20px;" ${S.primaryGoal?'':'disabled'} onclick="go('dashboard')">GENERATE MY PLAN</button>
+  </div>`;
+}
+function setPrimary(id){ S.primaryGoal=id; render(); }
+function toggleSecondary(id){ S.secondaryGoals.includes(id) ? S.secondaryGoals=S.secondaryGoals.filter(x=>x!==id) : S.secondaryGoals.push(id); render(); }
+
+function todaysWorkout(){
+  const map = {chest:"chest", arms:"chest", shoulders:"chest", core:"core", legs:"legs", full:"full", pushup:"chest", challenge28:"full"};
+  const progId = map[S.primaryGoal] || "full";
+  const level = S.profile.experience.toLowerCase();
+  const items = PROGRAMS[progId].levels[level] || PROGRAMS[progId].levels.beginner;
+  return {tag: PROGRAMS[progId].name.toUpperCase(), items, program:progId, level};
+}
+
+function screenDashboard(){
+  const w = todaysWorkout();
+  const name = S.profile.name || "there";
+  const weekPct = Math.round((S.weekCompletedDays.length / Number(S.profile.days)) * 100);
+  const challengeCount = S.challengeDone.filter(Boolean).length;
+  return `
+  ${topbarMain("HOME")}
+  <div class="screen" style="padding-top:6px;">
+    <h2 class="disp" style="font-size:24px;">Hey ${name} 👋</h2>
+    <p style="color:var(--text-dim);font-size:13px;margin-top:4px;">Ready to build today?</p>
+
+    <div class="card" style="margin-top:18px;background:linear-gradient(160deg,var(--card),var(--card-hi));">
+      <div class="row"><span class="pill">TODAY'S WORKOUT</span><span class="tag">${S.profile.experience}</span></div>
+      <h3 class="disp" style="font-size:22px;margin-top:12px;">${w.tag}</h3>
+      <div class="stack" style="margin-top:12px;">
+        ${w.items.map(([id,sets,val])=>{const ex=EX[id]; return `<div class="exrow"><div class="exicon">🏋️</div><div style="flex:1;"><b style="font-size:13.5px;">${ex.name}</b><div style="color:var(--text-dim);font-size:12px;">${sets} × ${val}${ex.type==='time'?' sec':''}</div></div></div>`;}).join("")}
+      </div>
+      <div class="row" style="margin-top:14px;">
+        <span class="tag">⏱ Est. ${S.profile.duration} min</span>
+        <span class="tag">${S.profile.experience}</span>
+      </div>
+      <button class="btn btn-primary btn-block" style="margin-top:16px;" onclick="startWorkout('today')">START WORKOUT</button>
+    </div>
+
+    <div class="row" style="margin-top:20px;gap:12px;">
+      <div class="card" style="flex:1;text-align:center;">
+        <div style="font-size:26px;">🔥</div><b class="disp" style="font-size:20px;">${S.streak}</b><div style="color:var(--text-dim);font-size:11px;">Day streak</div>
+      </div>
+      <div class="card" style="flex:1;text-align:center;">
+        <div style="font-size:26px;">✅</div><b class="disp" style="font-size:20px;">${S.completedWorkouts}</b><div style="color:var(--text-dim);font-size:11px;">Completed</div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:14px;">
+      <div class="row"><b style="font-size:13.5px;">Weekly progress</b><span class="tag">${S.weekCompletedDays.length}/${S.profile.days}</span></div>
+      <div class="progress-track" style="margin-top:10px;"><div class="progress-fill" style="width:${Math.min(weekPct,100)}%;"></div></div>
+    </div>
+
+    <div class="card" style="margin-top:14px;">
+      <div class="row"><b style="font-size:13.5px;">28-Day Challenge</b><span class="tag">${challengeCount}/28</span></div>
+      <div style="margin-top:10px;">${wall(28, challengeCount)}</div>
+      <button class="btn btn-ghost btn-block" style="margin-top:12px;" onclick="go('challenge')">View challenge</button>
+    </div>
+
+    <button class="btn btn-ghost btn-block" style="margin-top:14px;" onclick="go('restday')">😴 Next rest day tips</button>
+  </div>`;
+}
+function topbarMain(active){
+  return `<div class="topbar">
+    <div style="display:flex;align-items:center;gap:8px;">${logoSVG().replace('viewBox="0 0 100 100"','viewBox="0 0 100 100" width="26" height="26"')}<b class="disp" style="font-size:15px;">HomeBulk</b></div>
+    <div class="iconbtn" onclick="go('settings')">${icon('gear')}</div>
+  </div>`;
+}
+
+function startWorkout(source, program, level, dayNum){
+  let items, tag;
+  if(source==="today"){ const w = todaysWorkout(); items=w.items; tag=w.tag; }
+  else if(source==="program"){ items = PROGRAMS[program].levels[level]; tag = PROGRAMS[program].name.toUpperCase()+" · "+level.toUpperCase(); }
+  else if(source==="challenge"){ const d = genDay(dayNum); items = d.items; tag = "DAY "+dayNum+" — "+d.tag; }
+  S.workoutSource = {source, program, level, dayNum};
+  S.exList = items;
+  S.exIdx = 0; S.setIdx = 0;
+  S.workoutTag = tag;
+  S.live = {phase:"idle", secondsLeft:0, reps:0, timerId:null, resting:false};
+  go("exerciseInstr");
+}
+
+function currentEx(){ return S.exList[S.exIdx]; }
+
+function screenExerciseInstr(){
+  const [id,sets,val] = currentEx();
+  const ex = EX[id];
+  return `
+  <div class="topbar"><div class="iconbtn" onclick="go('dashboard')">✕</div><span class="tag">Exercise ${S.exIdx+1} / ${S.exList.length}</span><div style="width:38px;"></div></div>
+  <div class="screen" style="padding-top:6px;">
+    <p class="eyebrow">${S.workoutTag||''}</p>
+    <h2 class="disp" style="font-size:26px;margin-top:6px;">${ex.name.toUpperCase()}</h2>
+    <p style="color:var(--text-dim);font-size:13px;margin-top:6px;">Target: ${ex.target}</p>
+
+    <div class="card" style="margin-top:16px;height:150px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--accent-soft),var(--card));">
+      <div style="font-size:56px;" id="demoIcon">🏋️</div>
+    </div>
+    <button class="btn btn-ghost btn-block" style="margin-top:10px;" onclick="watchDemo()">▶ WATCH DEMO</button>
+
+    <div class="card" style="margin-top:16px;">
+      <b style="font-size:13px;color:var(--accent);">HOW TO PERFORM</b>
+      <ul class="list-clean" style="margin-top:10px;">${ex.how.map(h=>`<li>${h}</li>`).join("")}</ul>
+    </div>
+    <div class="card" style="margin-top:12px;">
+      <b style="font-size:13px;color:var(--ember);">COMMON MISTAKES</b>
+      <ul class="list-clean" style="margin-top:10px;">${ex.mistakes.map(h=>`<li>${h}</li>`).join("")}</ul>
+    </div>
+
+    <div style="margin-top:14px;" class="tag">This set: ${sets} × ${val}${ex.type==='time'?' sec':' reps'}</div>
+
+    <div style="flex:1;"></div>
+    <button class="btn btn-primary btn-block" style="margin-top:16px;" onclick="beginExercise()">START EXERCISE</button>
+    ${ex.easier ? `<button class="btn btn-ghost btn-block" style="margin-top:10px;" onclick="useEasier()">USE EASIER VERSION</button>` : ""}
+  </div>`;
+}
+function watchDemo(){ const e=document.getElementById("demoIcon"); if(e){ e.style.transition="transform .4s"; e.style.transform="scale(1.25) rotate(-4deg)"; setTimeout(()=>{e.style.transform="scale(1) rotate(0)";},400);} speak(EX[currentEx()[0]].name + ". " + EX[currentEx()[0]].how[0]); }
+function useEasier(){
+  const [id,sets,val] = currentEx();
+  const easierId = EX[id].easier;
+  if(easierId){ S.exList[S.exIdx] = [easierId, sets, val]; render(); }
+}
+function beginExercise(){
+  S.setIdx = 0;
+  const [id,,val] = currentEx();
+  const ex = EX[id];
+  speak(`${ex.name}. Get into position. Ready. Three, two, one, start.`);
+  go("liveWorkout");
+  startSet();
+}
+function startSet(){
+  const [id,,val] = currentEx();
+  const ex = EX[id];
+  clearInterval(S.live.timerId);
+  if(ex.type==="time"){
+    S.live = {phase:"active", secondsLeft:val, reps:0, resting:false};
+    S.live.timerId = setInterval(()=>{
+      S.live.secondsLeft--;
+      if(S.live.secondsLeft===5) speak("Five more seconds.");
+      if(S.live.secondsLeft<=0){ clearInterval(S.live.timerId); finishSet(); return; }
+      render();
+    },1000);
+  } else {
+    S.live = {phase:"active", secondsLeft:0, reps:0, resting:false, target:val};
+  }
+  render();
+}
+function logRep(){
+  S.live.reps++;
+  if(S.live.reps >= S.live.target){ speak("Set complete. Great work."); finishSet(); }
+  else if(S.live.reps === S.live.target-2){ speak("Two more."); render(); }
+  else render();
+}
+function finishSet(){
+  const [id,sets] = currentEx();
+  if(S.setIdx < sets-1){
+    S.setIdx++;
+    S.live = {phase:"rest", secondsLeft:60, resting:true};
+    speak("Rest for 60 seconds.");
+    S.live.timerId = setInterval(()=>{
+      S.live.secondsLeft--;
+      if(S.live.secondsLeft<=0){ clearInterval(S.live.timerId); startSet(); return; }
+      render();
+    },1000);
+    render();
+  } else {
+    nextExercise();
+  }
+}
+function adjustRest(sec){ if(S.live.phase==="rest"){ S.live.secondsLeft = Math.max(0,S.live.secondsLeft+sec); render(); } }
+function skipRest(){ clearInterval(S.live.timerId); startSet(); }
+function nextExercise(){
+  clearInterval(S.live.timerId);
+  if(S.exIdx < S.exList.length-1){
+    S.exIdx++; S.setIdx=0;
+    const nx = EX[currentEx()[0]];
+    speak("Next exercise: "+nx.name+".");
+    go("exerciseInstr");
+  } else {
+    completeWorkout();
+  }
+}
+function endWorkoutEarly(){ clearInterval(S.live.timerId); go("dashboard"); }
+function completeWorkout(){
+  S.streak++; S.completedWorkouts++;
+  if(!S.weekCompletedDays.includes(S.completedWorkouts)) S.weekCompletedDays.push(S.completedWorkouts);
+  if(S.weekCompletedDays.length > Number(S.profile.days)) S.weekCompletedDays.shift();
+  if(S.workoutSource && S.workoutSource.source==="challenge"){
+    S.challengeDone[S.workoutSource.dayNum-1] = true;
+  }
+  speak("Workout complete. Progress saved. Great job today.");
+  go("workoutComplete");
+}
+
+function screenLiveWorkout(){
+  const [id,sets,val] = currentEx();
+  const ex = EX[id];
+  const pctExercises = Math.round(((S.exIdx)/S.exList.length)*100);
+  if(S.live.phase==="rest"){
+    return `
+    <div class="screen" style="justify-content:center;align-items:center;text-align:center;">
+      <p class="eyebrow">REST</p>
+      <div class="timer-big" style="margin-top:10px;">${fmtTime(S.live.secondsLeft)}</div>
+      <p style="color:var(--text-dim);margin-top:8px;">Next: ${ex.name} — set ${S.setIdx+1}/${sets}</p>
+      <div style="display:flex;gap:10px;margin-top:22px;">
+        <button class="btn btn-ghost" onclick="adjustRest(15)">+15 sec</button>
+        <button class="btn btn-ghost" onclick="adjustRest(30)">+30 sec</button>
+      </div>
+      <button class="btn btn-primary btn-block" style="margin-top:14px;" onclick="skipRest()">SKIP REST</button>
+      <button class="btn btn-ghost btn-block" style="margin-top:10px;" onclick="endWorkoutEarly()">END WORKOUT</button>
+    </div>`;
+  }
+  const isTime = ex.type==="time";
+  return `
+  <div class="screen">
+    <div class="row"><span class="tag">${S.exIdx+1}/${S.exList.length} exercises</span><span class="tag">SET ${S.setIdx+1} / ${sets}</span></div>
+    <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;">
+      <h2 class="disp" style="font-size:26px;">${ex.name.toUpperCase()}</h2>
+      <div style="font-size:70px;margin:14px 0;">🏋️</div>
+      ${isTime
+        ? `<div class="timer-big">${fmtTime(S.live.secondsLeft)}</div><p style="color:var(--text-dim);margin-top:6px;">Hold steady — keep breathing</p>`
+        : `<div class="timer-big">${S.live.reps} <span style="font-size:28px;color:var(--text-dim);">/ ${S.live.target}</span></div>
+           <p style="color:var(--text-dim);margin-top:6px;">REPS</p>
+           <button class="btn btn-primary" style="margin-top:18px;width:150px;height:150px;border-radius:50%;font-size:17px;" onclick="logRep()">TAP<br>+1 REP</button>`
+      }
+    </div>
+    <div class="progress-track"><div class="progress-fill" style="width:${pctExercises}%;"></div></div>
+    <div class="row" style="margin-top:14px;gap:10px;">
+      <button class="btn btn-ghost" style="flex:1;" onclick="skipToRest()">SKIP</button>
+      <button class="btn btn-ember" style="flex:1;" onclick="finishSet()">FINISH SET</button>
+    </div>
+    <button class="btn btn-ghost btn-block" style="margin-top:10px;" onclick="endWorkoutEarly()">END WORKOUT</button>
+  </div>`;
+}
+function skipToRest(){ clearInterval(S.live.timerId); finishSet(); }
+
+function screenWorkoutComplete(){
+  return `
+  <div class="screen" style="justify-content:center;align-items:center;text-align:center;">
+    <div style="font-size:60px;">🎉</div>
+    <h2 class="disp" style="font-size:26px;margin-top:10px;">WORKOUT COMPLETE</h2>
+    <p style="color:var(--text-dim);margin-top:8px;">Nice work, ${S.profile.name||'champ'}. Your progress has been saved.</p>
+    <div class="card" style="margin-top:20px;width:100%;">
+      <div class="row"><span>🔥 Streak</span><b>${S.streak} days</b></div>
+      <div class="row" style="margin-top:8px;"><span>✅ Total workouts</span><b>${S.completedWorkouts}</b></div>
+    </div>
+    <button class="btn btn-primary btn-block" style="margin-top:24px;" onclick="go('dashboard')">BACK TO HOME</button>
+    <button class="btn btn-ghost btn-block" style="margin-top:10px;" onclick="go('progress')">VIEW PROGRESS</button>
+  </div>`;
+}
+
+function screenGoalsHub(){
+  return `
+  ${topbarMain("WORKOUTS")}
+  <div class="screen" style="padding-top:6px;">
+    <h2 class="disp" style="font-size:22px;">Workout Programs</h2>
+    <p style="color:var(--text-dim);font-size:13px;margin-top:4px;">Goal-based programs beyond the 28-day challenge.</p>
+    <div class="stack" style="margin-top:16px;">
+      ${Object.entries(PROGRAMS).map(([key,p])=>`
+      <div class="card" onclick="go('programDetail',{detailProgram:'${key}',detailLevel:'${S.profile.experience.toLowerCase()}'})" style="cursor:pointer;">
+        <div class="row">
+          <div style="display:flex;align-items:center;gap:10px;"><div class="exicon" style="width:40px;height:40px;">${p.icon}</div><b>${p.name}</b></div>
+          <span style="color:var(--text-dim);">›</span>
+        </div>
+        <p style="color:var(--text-dim);font-size:12.5px;margin-top:8px;">${p.goal}</p>
+      </div>`).join("")}
+      <div class="card" onclick="go('challenge')" style="cursor:pointer;background:linear-gradient(135deg,var(--accent-soft),var(--card));">
+        <div class="row"><b>🗓️ 28-Day Challenge</b><span style="color:var(--text-dim);">›</span></div>
+        <p style="color:var(--text-dim);font-size:12.5px;margin-top:8px;">Structured 4-week consistency program.</p>
+      </div>
+    </div>
+  </div>`;
+}
+
+function screenProgramDetail(){
+  const p = PROGRAMS[S.detailProgram];
+  const level = S.detailLevel;
+  return `
+  <div class="topbar"><div class="iconbtn" onclick="go('programs')">←</div><b>${p.name}</b><div style="width:38px;"></div></div>
+  <div class="screen" style="padding-top:6px;">
+    <p style="color:var(--text-dim);font-size:13px;">${p.goal}</p>
+    <div class="chip-row" style="margin-top:14px;">
+      ${["beginner","intermediate","advanced"].map(l=>`<div class="week-tab ${level===l?'active':''}" onclick="S.detailLevel='${l}';render()">${l[0].toUpperCase()+l.slice(1)}</div>`).join("")}
+    </div>
+    <div class="stack" style="margin-top:16px;">
+      ${p.levels[level].map(([id,sets,val])=>{const ex=EX[id];return `
+      <div class="exrow" style="cursor:pointer;" onclick="go('exerciseDetail',{detailExId:'${id}'})">
+        <div class="exicon">🏋️</div>
+        <div style="flex:1;"><b style="font-size:13.5px;">${ex.name}</b><div style="color:var(--text-dim);font-size:12px;">${sets} × ${val}${ex.type==='time'?' sec':''}</div></div>
+        <span style="color:var(--text-dim);">›</span>
+      </div>`;}).join("")}
+    </div>
+    <button class="btn btn-primary btn-block" style="margin-top:20px;" onclick="startWorkout('program','${S.detailProgram}','${level}')">START ${p.name.toUpperCase()}</button>
+  </div>`;
+}
+
+function screenChallenge(){
+  const wk = S.activeWeekTab;
+  return `
+  ${topbarMain("CHALLENGE")}
+  <div class="screen" style="padding-top:6px;">
+    <h2 class="disp" style="font-size:22px;">28-Day Challenge</h2>
+    <div class="card" style="margin-top:14px;">
+      <div class="row"><b style="font-size:13px;">Overall progress</b><span class="tag">${S.challengeDone.filter(Boolean).length} / 28 days</span></div>
+      <div style="margin-top:10px;">${wall(28, S.challengeDone.filter(Boolean).length)}</div>
+    </div>
+    <div class="chip-row" style="margin-top:16px;">
+      ${[1,2,3,4].map(w=>`<div class="week-tab ${wk===w?'active':''}" onclick="S.activeWeekTab=${w};render()">WEEK ${w} — ${WEEK_LABEL[w-1]}</div>`).join("")}
+    </div>
+    <div class="dayg" style="margin-top:16px;">
+      ${Array.from({length:7},(_,i)=>{
+        const dayNum = (wk-1)*7+i+1;
+        const d = genDay(dayNum);
+        const done = S.challengeDone[dayNum-1];
+        const cls = done ? "done" : d.rest ? "rest" : "";
+        return `<div class="daychip ${cls}" onclick="go('challengeDay',{detailDay:${dayNum}})">${dayNum}</div>`;
+      }).join("")}
+    </div>
+    <p style="color:var(--text-dim);font-size:11.5px;margin-top:10px;">Tap a day to view its workout.</p>
+  </div>`;
+}
+function screenChallengeDay(){
+  const dayNum = S.detailDay;
+  const d = genDay(dayNum);
+  const done = S.challengeDone[dayNum-1];
+  if(d.rest){
+    return `
+    <div class="topbar"><div class="iconbtn" onclick="go('challenge')">←</div><b>DAY ${dayNum}</b><div style="width:38px;"></div></div>
+    <div class="screen" style="justify-content:center;align-items:center;text-align:center;">
+      <div style="font-size:50px;">😴</div>
+      <h2 class="disp" style="font-size:22px;margin-top:8px;">REST DAY</h2>
+      <p style="color:var(--text-dim);margin-top:8px;">Recovery is part of the plan. Light walking or stretching is great today.</p>
+      <button class="btn btn-primary btn-block" style="margin-top:20px;" onclick="go('challenge')">BACK TO CHALLENGE</button>
+    </div>`;
+  }
+  return `
+  <div class="topbar"><div class="iconbtn" onclick="go('challenge')">←</div><b>DAY ${dayNum}</b><div style="width:38px;"></div></div>
+  <div class="screen" style="padding-top:6px;">
+    <p class="eyebrow">WEEK ${d.week} — ${WEEK_LABEL[d.week-1]}</p>
+    <h2 class="disp" style="font-size:24px;margin-top:6px;">${d.tag}</h2>
+    <div class="stack" style="margin-top:16px;">
+      ${d.items.map(([id,sets,val])=>{const ex=EX[id];return `
+      <div class="exrow"><div class="exicon">🏋️</div><div style="flex:1;"><b style="font-size:13.5px;">${ex.name}</b><div style="color:var(--text-dim);font-size:12px;">${sets} × ${val}${ex.type==='time'?' sec':''}</div></div>
+      ${done?'<span style="color:var(--good);">✓</span>':''}</div>`;}).join("")}
+    </div>
+    <button class="btn btn-primary btn-block" style="margin-top:20px;" onclick="startWorkout('challenge',null,null,${dayNum})">${done?'REDO DAY '+dayNum:'START DAY '+dayNum}</button>
+  </div>`;
+}
+
+function screenLibrary(){
+  const q = S.library.query.toLowerCase();
+  const filter = S.library.filter;
+  const list = Object.entries(EX).filter(([id,ex])=>{
+    const matchQ = ex.name.toLowerCase().includes(q);
+    const matchF = filter==="all" || ex.muscles===filter;
+    return matchQ && matchF;
+  });
+  const groups = {chest:"Chest",core:"Core",legs:"Legs",full:"Full Body"};
+  return `
+  ${topbarMain("EXERCISES")}
+  <div class="screen" style="padding-top:6px;">
+    <h2 class="disp" style="font-size:22px;">Exercise Library</h2>
+    <input type="text" placeholder="Search exercises…" value="${S.library.query}" oninput="S.library.query=this.value;render()" style="margin-top:14px;">
+    <div class="chip-row" style="margin-top:12px;">
+      ${["all","chest","core","legs","full"].map(f=>`<div class="week-tab ${filter===f?'active':''}" onclick="S.library.filter='${f}';render()">${f==='all'?'All':groups[f]}</div>`).join("")}
+    </div>
+    <div class="stack" style="margin-top:16px;">
+      ${list.map(([id,ex])=>`
+      <div class="exrow" style="cursor:pointer;" onclick="go('exerciseDetail',{detailExId:'${id}'})">
+        <div class="exicon">🏋️</div>
+        <div style="flex:1;"><b style="font-size:13.5px;">${ex.name}</b><div style="color:var(--text-dim);font-size:12px;">${ex.target}</div></div>
+        <span style="color:var(--text-dim);">›</span>
+      </div>`).join("") || `<p style="color:var(--text-dim);text-align:center;margin-top:20px;">No exercises found.</p>`}
+    </div>
+  </div>`;
+}
+function screenExerciseDetail(){
+  const id = S.detailExId; const ex = EX[id];
+  return `
+  <div class="topbar"><div class="iconbtn" onclick="history.back?go('library'):go('library')">←</div><b>${ex.name}</b><div style="width:38px;"></div></div>
+  <div class="screen" style="padding-top:6px;">
+    <div class="card" style="height:130px;display:flex;align-items:center;justify-content:center;font-size:50px;background:linear-gradient(135deg,var(--accent-soft),var(--card));">🏋️</div>
+    <p style="color:var(--text-dim);font-size:13px;margin-top:12px;">Target: ${ex.target} · ${ex.type==='time'?'Timed hold':'Rep-based'}</p>
+    <div class="card" style="margin-top:14px;">
+      <b style="font-size:13px;color:var(--accent);">HOW TO PERFORM</b>
+      <ul class="list-clean" style="margin-top:10px;">${ex.how.map(h=>`<li>${h}</li>`).join("")}</ul>
+    </div>
+    <div class="card" style="margin-top:12px;">
+      <b style="font-size:13px;color:var(--ember);">COMMON MISTAKES</b>
+      <ul class="list-clean" style="margin-top:10px;">${ex.mistakes.map(h=>`<li>${h}</li>`).join("")}</ul>
+    </div>
+    <div class="card" style="margin-top:12px;">
+      <b style="font-size:13px;">PROGRESSION PATH</b>
+      <div class="row" style="margin-top:10px;">
+        <span class="tag">${ex.easier?EX[ex.easier].name:"—"}</span><span>→</span>
+        <span class="pill">${ex.name}</span><span>→</span>
+        <span class="tag">${ex.harder?EX[ex.harder].name:"—"}</span>
+      </div>
+    </div>
+  </div>`;
+}
+
+function screenProgress(){
+  const wk = Math.round((S.weekCompletedDays.length/Number(S.profile.days))*100);
+  return `
+  ${topbarMain("PROGRESS")}
+  <div class="screen" style="padding-top:6px;">
+    <h2 class="disp" style="font-size:22px;">Your Progress</h2>
+    <div class="row" style="margin-top:16px;gap:12px;">
+      ${ring(Math.min(wk,100), wk+'%')}
+      <div style="flex:1;">
+        <b style="font-size:13.5px;">Weekly consistency</b>
+        <p style="color:var(--text-dim);font-size:12px;margin-top:4px;">${S.weekCompletedDays.length} of ${S.profile.days} planned days this week</p>
+      </div>
+    </div>
+    <div class="row" style="margin-top:16px;gap:12px;">
+      <div class="card" style="flex:1;text-align:center;"><div style="font-size:22px;">🔥</div><b class="disp">${S.streak}</b><div style="color:var(--text-dim);font-size:11px;">Streak</div></div>
+      <div class="card" style="flex:1;text-align:center;"><div style="font-size:22px;">✅</div><b class="disp">${S.completedWorkouts}</b><div style="color:var(--text-dim);font-size:11px;">Workouts</div></div>
+      <div class="card" style="flex:1;text-align:center;"><div style="font-size:22px;">🗓️</div><b class="disp">${S.challengeDone.filter(Boolean).length}</b><div style="color:var(--text-dim);font-size:11px;">Challenge days</div></div>
+    </div>
+    <div class="card" style="margin-top:14px;">
+      <b style="font-size:13px;">28-DAY CHALLENGE</b>
+      <div style="margin:10px 0;">${wall(28, S.challengeDone.filter(Boolean).length)}</div>
+      <div class="progress-track"><div class="progress-fill" style="width:${Math.round(S.challengeDone.filter(Boolean).length/28*100)}%;"></div></div>
+      <p style="color:var(--text-dim);font-size:11.5px;margin-top:6px;">${S.challengeDone.filter(Boolean).length} / 28 days</p>
+    </div>
+    <div class="card" style="margin-top:14px;">
+      <b style="font-size:13px;">PERSONAL RECORDS</b>
+      <p style="color:var(--text-dim);font-size:11.5px;margin-top:4px;">Log your best numbers manually.</p>
+      <div class="stack" style="margin-top:12px;">
+        <div class="row"><span>Max push-ups</span><input type="number" style="width:80px;padding:8px;" value="${S.pr.pushups}" oninput="S.pr.pushups=this.value"></div>
+        <div class="row"><span>Max squats</span><input type="number" style="width:80px;padding:8px;" value="${S.pr.squats}" oninput="S.pr.squats=this.value"></div>
+        <div class="row"><span>Plank hold (sec)</span><input type="number" style="width:80px;padding:8px;" value="${S.pr.plankSec}" oninput="S.pr.plankSec=this.value"></div>
+      </div>
+      <button class="btn btn-ghost btn-block" style="margin-top:12px;" onclick="render()">SAVE RECORDS</button>
+    </div>
+  </div>`;
+}
+
+function screenRestDay(){
+  return `
+  ${topbarMain("HOME")}
+  <div class="screen" style="justify-content:center;align-items:center;text-align:center;padding-top:6px;">
+    <div style="font-size:50px;">😴</div>
+    <h2 class="disp" style="font-size:22px;margin-top:8px;">TODAY IS A REST DAY</h2>
+    <p style="color:var(--text-dim);margin-top:8px;">Recovery drives growth just as much as training does. Keep it light today.</p>
+    <div class="stack" style="width:100%;margin-top:20px;">
+      <div class="exrow"><div class="exicon">🚶</div><div><b style="font-size:13.5px;">Walking</b><div style="color:var(--text-dim);font-size:12px;">15–20 minutes, easy pace</div></div></div>
+      <div class="exrow"><div class="exicon">🧘</div><div><b style="font-size:13.5px;">Gentle mobility</b><div style="color:var(--text-dim);font-size:12px;">Hips, shoulders, spine</div></div></div>
+      <div class="exrow"><div class="exicon">🤸</div><div><b style="font-size:13.5px;">Stretching</b><div style="color:var(--text-dim);font-size:12px;">5–10 minutes, full body</div></div></div>
+    </div>
+    <p style="color:var(--text-dim);font-size:11.5px;margin-top:16px;">Never train through pain — rest is part of the program, not a break from it.</p>
+    <button class="btn btn-primary btn-block" style="margin-top:20px;" onclick="go('dashboard')">BACK TO HOME</button>
+  </div>`;
+}
+
+function screenNutrition(){
+  const items = [
+    ["🍗 Protein-rich foods","Supports muscle repair and growth — eggs, chicken, fish, beans, tofu, dairy."],
+    ["🍠 Carbohydrates","Fuels your workouts and recovery — whole grains, rice, oats, potatoes."],
+    ["🥦 Fruits & vegetables","Micronutrients and fiber to support overall health."],
+    ["🥑 Healthy fats","Supports hormone health — nuts, seeds, olive oil, avocado."],
+    ["💧 Water","Stay consistently hydrated throughout the day."],
+    ["🍽 Regular meals","Aim for steady, balanced meals rather than skipping."],
+    ["😴 Adequate sleep","7–9 hours supports recovery and progress."],
+  ];
+  return `
+  <div class="topbar"><div class="iconbtn" onclick="go('dashboard')">←</div><b>Nutrition</b><div style="width:38px;"></div></div>
+  <div class="screen" style="padding-top:6px;">
+    <h2 class="disp" style="font-size:22px;">Nutrition for Strength</h2>
+    <p style="color:var(--text-dim);font-size:13px;margin-top:6px;">Simple, balanced guidance — no extreme diets or supplements needed.</p>
+    <div class="stack" style="margin-top:16px;">
+      ${items.map(([t,d])=>`<div class="card"><b style="font-size:13.5px;">${t}</b><p style="color:var(--text-dim);font-size:12.5px;margin-top:6px;">${d}</p></div>`).join("")}
+    </div>
+    <div class="card" style="margin-top:14px;background:var(--accent-soft);">
+      <p style="font-size:12px;color:var(--text-dim);">This is general guidance, not medical or dietary advice. Adjust to your own needs, and speak with a professional for anything specific to your health.</p>
+    </div>
+  </div>`;
+}
+
+function screenSettings(){
+  const p = S.profile;
+  return `
+  <div class="topbar"><div class="iconbtn" onclick="go('dashboard')">←</div><b>Settings</b><div style="width:38px;"></div></div>
+  <div class="screen" style="padding-top:6px;">
+    <div class="card">
+      <b style="font-size:13px;">PROFILE</b>
+      <div class="row" style="margin-top:10px;"><span style="color:var(--text-dim);">Name</span><b>${p.name||'—'}</b></div>
+      <div class="row" style="margin-top:8px;"><span style="color:var(--text-dim);">Experience</span><b>${p.experience}</b></div>
+      <div class="row" style="margin-top:8px;"><span style="color:var(--text-dim);">Schedule</span><b>${p.days} days · ${p.duration} min</b></div>
+      <div class="row" style="margin-top:8px;"><span style="color:var(--text-dim);">Goal</span><b>${(GOALS.find(g=>g.id===S.primaryGoal)||{}).label||'—'}</b></div>
+      <button class="btn btn-ghost btn-block" style="margin-top:12px;" onclick="go('setup',{setupStep:0})">Edit profile</button>
+      <button class="btn btn-ghost btn-block" style="margin-top:8px;" onclick="go('goals',{fromSettings:true})">Change goal</button>
+    </div>
+
+    <div class="card" style="margin-top:14px;">
+      <b style="font-size:13px;">VOICE COACH</b>
+      <div class="stack" style="margin-top:10px;">
+        <div class="row"><span>Voice on/off</span><input type="checkbox" ${p.voiceOn?'checked':''} onchange="S.profile.voiceOn=this.checked;render()"></div>
+        <div class="row"><span>Voice</span>
+          <select onchange="S.profile.voice=this.value;render()">
+            <option value="male" ${p.voice==='male'?'selected':''}>Male</option>
+            <option value="female" ${p.voice==='female'?'selected':''}>Female</option>
+            <option value="off" ${p.voice==='off'?'selected':''}>Off</option>
+          </select>
+        </div>
+        <div class="row"><span>Motivation messages</span><input type="checkbox" ${p.motivation?'checked':''} onchange="S.profile.motivation=this.checked;render()"></div>
+        <button class="btn btn-ghost btn-block" onclick="testVoice()">🎧 Test Voice</button>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:14px;">
+      <b style="font-size:13px;">NOTIFICATIONS</b>
+      <div class="row" style="margin-top:10px;"><span>Workout reminders</span><input type="checkbox" checked></div>
+      <div class="row" style="margin-top:8px;"><span>Recovery reminders</span><input type="checkbox" checked></div>
+    </div>
+
+    <div class="card" style="margin-top:14px;">
+      <b style="font-size:13px;">MORE</b>
+      <button class="btn btn-ghost btn-block" style="margin-top:10px;" onclick="go('nutrition')">🍎 Nutrition guide</button>
+      <button class="btn btn-ghost btn-block" style="margin-top:8px;" onclick="alert('This application provides general fitness guidance. Start at a level appropriate for you, use proper technique, and stop if an exercise causes pain. If you have an injury or medical condition, consult a qualified professional before starting a new exercise program.')">⚠️ Safety disclaimer</button>
+      <button class="btn btn-ember btn-block" style="margin-top:8px;" onclick="resetProgress()">Reset progress</button>
+    </div>
+  </div>`;
+}
+function resetProgress(){
+  if(!confirm("Reset all progress? This cannot be undone.")) return;
+  S = {...S, streak:0, completedWorkouts:0, weekCompletedDays:[], challengeDone:Array(28).fill(false), pr:{pushups:0,squats:0,plankSec:0}};
+  go("dashboard");
+}
+
+/* ========================= RENDER ROOT ========================= */
+function render(){
+  const app = document.getElementById("app");
+  let html = "";
+  switch(S.screen){
+    case "splash": html = screenSplash(); break;
+    case "setup": html = screenSetup(); break;
+    case "goals": html = screenGoals(S.fromSettings); break;
+    case "dashboard": html = screenDashboard(); break;
+    case "exerciseInstr": html = screenExerciseInstr(); break;
+    case "liveWorkout": html = screenLiveWorkout(); break;
+    case "workoutComplete": html = screenWorkoutComplete(); break;
+    case "programs": html = screenGoalsHub(); break;
+    case "programDetail": html = screenProgramDetail(); break;
+    case "challenge": html = screenChallenge(); break;
+    case "challengeDay": html = screenChallengeDay(); break;
+    case "library": html = screenLibrary(); break;
+    case "exerciseDetail": html = screenExerciseDetail(); break;
+    case "progress": html = screenProgress(); break;
+    case "restday": html = screenRestDay(); break;
+    case "nutrition": html = screenNutrition(); break;
+    case "settings": html = screenSettings(); break;
+    default: html = screenDashboard();
+  }
+  const showNav = ["dashboard","programs","challenge","library","progress"].includes(S.screen);
+  app.innerHTML = html + (showNav ? navBar() : "");
+}
+function navBar(){
+  const items = [
+    ["dashboard","home","HOME"],
+    ["programs","dumbbell","WORKOUTS"],
+    ["challenge","calendar","CHALLENGE"],
+    ["library","list","EXERCISES"],
+    ["progress","chart","PROGRESS"],
+  ];
+  return `<div class="navbar">${items.map(([s,ic,label])=>`
+    <div class="navitem ${S.screen===s?'active':''}" onclick="go('${s}')">${icon(ic)}<span>${label}</span></div>`).join("")}</div>`;
+}
+
+window.speechSynthesis && (window.speechSynthesis.onvoiceschanged = ()=>{});
+render();
+</script>
+</body>
+</html>
